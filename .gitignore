@@ -1,0 +1,9 @@
+# Data File
+expenses.csv
+
+#  Python Cache
+__pycache__/
+
+# Environment
+.venv/
+.env
