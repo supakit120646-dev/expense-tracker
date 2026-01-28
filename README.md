@@ -22,14 +22,16 @@ A web-based application for tracking daily expenses, visualizing data with inter
 1. Clone the repository
    ```bash
     git clone https://github.com/supakit120646-dev/expense-tracker.git
+2. Install dependencies
+   ```bash
+   pip install -r requirements.txt
+4. Run the app
+   ```bash
+   streamlit run expense_tracker.py
 
-2.Install dependencies
 
-    pip install -r requirements.txt
 
-3.Run the app
-
-    streamlit run expense_tracker.py
+    
 
 
   
