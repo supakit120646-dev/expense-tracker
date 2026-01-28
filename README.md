@@ -28,10 +28,3 @@ A web-based application for tracking daily expenses, visualizing data with inter
 4. Run the app
    ```bash
    streamlit run expense_tracker.py
-
-
-
-    
-
-
-  
