@@ -2,7 +2,7 @@
 
 A web-based application for tracking daily expenses, visualizing data with interactive dashboards, and filtering records by date/category. This project is part of the internship assessment submission.
 
-🔗 **Live Demo:** [ใส่ลิงก์ App ของคุณที่ได้จาก Streamlit Cloud ตรงนี้]
+🔗 **Live Demo:** [https://expense-tracker-nqxn.onrender.com]
 
 ##  Key Features
 - **Add Expenses:** Record transactions with Date, Time, Category, Description, and Amount.
