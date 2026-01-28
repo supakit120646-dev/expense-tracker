@@ -5,10 +5,8 @@ import os
 import random
 from datetime import datetime, time, timedelta
 
-# --- ตั้งค่าหน้าเว็บ ---
+# --- Webpage Config ---
 st.set_page_config(page_title="โปรแกรมบันทึกรายจ่าย", layout="wide")
-
-# 🛑 CSS ซ่อน Toolbar (รูปตา, แว่นขยาย) เพื่อความสะอาดตา
 st.markdown("""
 <style>
     [data-testid="stElementToolbar"] {
@@ -19,7 +17,7 @@ st.markdown("""
 
 FILE_NAME = 'expenses.csv'
 
-# --- ฟังก์ชันโหลดข้อมูล ---
+# --- Load Data ---
 def load_data():
     if not os.path.exists(FILE_NAME):
         return pd.DataFrame(columns=['Date', 'Category', 'Description', 'Amount'])
@@ -30,7 +28,7 @@ def load_data():
     except Exception:
         return pd.DataFrame(columns=['Date', 'Category', 'Description', 'Amount'])
 
-# --- ฟังก์ชันบันทึกข้อมูล ---
+# --- Save Data ---
 def save_data(dt_input, category, desc, amount):
     new_data = pd.DataFrame({
         'Date': [dt_input], 
@@ -44,7 +42,7 @@ def save_data(dt_input, category, desc, amount):
     else:
         new_data.to_csv(FILE_NAME, mode='a', header=False, index=False)
 
-# --- ฟังก์ชันสร้างข้อมูลทดสอบ ---
+# --- Random Data ---
 def generate_fake_data():
     categories = {
         "อาหาร": ["ข้าวมันไก่", "ก๋วยเตี๋ยวเรือ", "ชาบูหมูกระทะ", "กาแฟเย็น"],
@@ -109,24 +107,15 @@ df = load_data()
 
 if not df.empty:
     st.subheader("🔍 ค้นหาและกรองข้อมูล")
-    
-    # 1. กรองวันที่
     c1, c2 = st.columns(2)
     start_date = c1.date_input("ตั้งแต่วันที่", df['Date'].min().date())
     end_date = c2.date_input("ถึงวันที่", df['Date'].max().date())
-    
-    # 2. ช่องค้นหา (Search Box) - เพิ่มใหม่ตรงนี้!
     search_query = st.text_input("🔎 ค้นหา (พิมพ์วันที่, หมวดหมู่ หรือ รายละเอียด)", placeholder="เช่น อาหาร, 2024-01-29, ค่าไฟ")
 
-    # --- Logic การ Filter ---
-    # ขั้นที่ 1: กรองตามวันที่ก่อน
+    # --- Filter ---
     mask_date = (df['Date'].dt.date >= start_date) & (df['Date'].dt.date <= end_date)
     filtered_df = df.loc[mask_date].copy()
-
-    # ขั้นที่ 2: กรองตามคำค้นหา (ถ้ามี)
     if search_query:
-        # แปลงวันที่เป็น String เพื่อให้ค้นหาด้วย text ได้
-        # และค้นหาใน Category กับ Description ด้วย
         mask_search = (
             filtered_df['Date'].astype(str).str.contains(search_query, case=False, na=False) |
             filtered_df['Category'].str.contains(search_query, case=False, na=False) |
@@ -136,14 +125,12 @@ if not df.empty:
 
     st.markdown("---")
 
-    # แสดง Metrics (ตัวเลขจะเปลี่ยนตามผลการค้นหา)
     total = filtered_df['Amount'].sum()
     m1, m2, m3 = st.columns(3)
     m1.metric("ยอดรวม (จากการกรอง)", f"{total:,.2f} ฿")
     m2.metric("จำนวนรายการ", f"{len(filtered_df)}")
     m3.metric("รายการล่าสุด", f"{filtered_df['Amount'].iloc[-1]:,.2f} ฿" if not filtered_df.empty else "-")
 
-    # กราฟ
     col_g1, col_g2 = st.columns(2)
     with col_g1:
         st.subheader("สัดส่วน (Pie)")
@@ -156,20 +143,12 @@ if not df.empty:
             fig = px.scatter(filtered_df, x='Date', y='Amount', color='Category', size='Amount')
             st.plotly_chart(fig, use_container_width=True)
 
-    # --- ส่วนแสดงตาราง ---
-    st.subheader("📄 รายการทั้งหมด (เรียงตามเวลา)")
-    
+    # --- Table ---
+    st.subheader("📄 รายการทั้งหมด (เรียงตามเวลา)") 
     if not filtered_df.empty:
-        # 1. เรียงข้อมูลจาก อดีต -> ปัจจุบัน
         display_df = filtered_df.sort_values(by='Date', ascending=True).reset_index(drop=True)
-        
-        # 2. ปรับเลขหน้า (Index) ให้เริ่มที่ 1, 2, 3...
         display_df.index = display_df.index + 1
-        
-        # 3. จัดรูปแบบวันที่เป็นข้อความ
         display_df['Date'] = display_df['Date'].dt.strftime('%Y-%m-%d %H:%M')
-        
-        # 4. แสดงตาราง
         st.dataframe(
             display_df[["Date", "Category", "Description", "Amount"]], 
             width="stretch",
@@ -179,4 +158,5 @@ if not df.empty:
         st.warning(f"ไม่พบข้อมูลที่ตรงกับคำว่า '{search_query}' ในช่วงเวลานี้")
 
 else:
-    st.info("ยังไม่มีข้อมูลครับ")
+
+    st.info("ยังไม่มีข้อมูล")
